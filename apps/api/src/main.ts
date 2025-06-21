@@ -22,7 +22,7 @@ if (!JWT_SECRET) {
 
 const SALT_ROUNDS = 10;
 const host = process.env.HOST ?? 'localhost';
-const port = process.env.PORT ? Number(process.env.PORT) : 3000;
+const port = process.env.PORT ? Number(process.env.PORT) : 3001;
 
 // CORS configuration
 const corsOptions = {
@@ -1767,5 +1767,5 @@ app.get('/teams/my', authenticateToken, async (req: Request, res: Response) => {
 });
 
 app.listen(port, () => {
-  console.log(`app listening on port ${port}`)
+  console.log(`[ ready ] on http://${host}:${port}`);
 });
