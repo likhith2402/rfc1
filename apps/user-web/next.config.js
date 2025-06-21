@@ -17,10 +17,6 @@ const nextConfig = {
   poweredByHeader: false,
   compress: true,
   productionBrowserSourceMaps: false,
-  // Add server configuration for Render
-  server: {
-    port: parseInt(process.env.PORT || '4200', 10),
-  },
   // The "rewrites" feature is re-enabled for Web Service deployments.
   async rewrites() {
     return [
