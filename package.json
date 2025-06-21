@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "nx build user-web",
-    "start": "nx serve user-web --prod",
+    "start": "npx next start dist/apps/user-web",
     "dev": "nx serve user-web"
   },
   "keywords": [],
