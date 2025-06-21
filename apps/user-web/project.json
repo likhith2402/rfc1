@@ -36,7 +36,8 @@
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "user-web:build",
-        "dev": true
+        "dev": true,
+        "port": 4200
       },
       "configurations": {
         "development": {
@@ -46,7 +47,8 @@
         },
         "production": {
           "buildTarget": "user-web:build:production",
-          "dev": false
+          "dev": false,
+          "port": 4200
         }
       }
     },
