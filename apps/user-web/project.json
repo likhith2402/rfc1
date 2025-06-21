@@ -47,8 +47,7 @@
         },
         "production": {
           "buildTarget": "user-web:build:production",
-          "dev": false,
-          "port": 4200
+          "dev": false
         }
       }
     },
