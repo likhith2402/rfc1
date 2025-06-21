@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "build": "nx build user-web",
+    "start": "nx serve user-web --prod",
+    "dev": "nx serve user-web"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

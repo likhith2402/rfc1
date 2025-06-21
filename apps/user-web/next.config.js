@@ -7,7 +7,8 @@ const { composePlugins, withNx } = require('@nx/next');
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-   output: 'export',
+  // Remove output: 'export' for server-side rendering support
+  // output: 'export',
   // Use this to set Nx-specific options
   // See: https://nx.dev/recipes/next/next-config-setup
   nx: {
@@ -21,7 +22,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`,
+        destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/:path*`,
       },
     ];
   },
@@ -37,7 +38,7 @@ const nextConfig = {
   },
   images: {
     domains: ['yourdomain.com'], // Add your image domains here
-    unoptimized: process.env.NODE_ENV === 'production',
+    unoptimized: false, // Enable image optimization for production
   },
 };
 
