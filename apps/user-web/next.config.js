@@ -7,7 +7,7 @@ const { composePlugins, withNx } = require('@nx/next');
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  output: 'export',
+  // output: 'export', // This is removed to enable server-side features
   // Use this to set Nx-specific options
   // See: https://nx.dev/recipes/next/next-config-setup
   nx: {
@@ -17,16 +17,15 @@ const nextConfig = {
   poweredByHeader: false,
   compress: true,
   productionBrowserSourceMaps: false,
-  // The "rewrites" feature is not supported in static exports.
-  // Your client-side code must call the API directly using the full URL.
-  // async rewrites() {
-  //   return [
-  //     {
-  //       source: '/api/:path*',
-  //       destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/:path*`,
-  //     },
-  //   ];
-  // },
+  // The "rewrites" feature is re-enabled for Web Service deployments.
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/:path*`,
+      },
+    ];
+  },
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
@@ -39,7 +38,7 @@ const nextConfig = {
   },
   images: {
     domains: ['yourdomain.com'], // Add your image domains here
-    unoptimized: true, // Static export requires images to be unoptimized or configured with a loader
+    unoptimized: false, // Image optimization is supported in Web Services
   },
 };
 
