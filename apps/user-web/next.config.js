@@ -7,8 +7,7 @@ const { composePlugins, withNx } = require('@nx/next');
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  // Remove output: 'export' for server-side rendering support
-  // output: 'export',
+  output: 'export',
   // Use this to set Nx-specific options
   // See: https://nx.dev/recipes/next/next-config-setup
   nx: {
@@ -18,27 +17,29 @@ const nextConfig = {
   poweredByHeader: false,
   compress: true,
   productionBrowserSourceMaps: false,
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/:path*`,
-      },
-    ];
-  },
+  // The "rewrites" feature is not supported in static exports.
+  // Your client-side code must call the API directly using the full URL.
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: '/api/:path*',
+  //       destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/:path*`,
+  //     },
+  //   ];
+  // },
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_AUTH_TOKEN_KEY: process.env.NEXT_PUBLIC_AUTH_TOKEN_KEY,
     NEXT_PUBLIC_ENABLE_ANALYTICS: process.env.NEXT_PUBLIC_ENABLE_ANALYTICS,
   },
-  // Production optimizations 
+  // Production optimizations
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   images: {
     domains: ['yourdomain.com'], // Add your image domains here
-    unoptimized: false, // Enable image optimization for production
+    unoptimized: true, // Static export requires images to be unoptimized or configured with a loader
   },
 };
 
