@@ -1,0 +1,174 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.9);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(10px);
+  font-family: 'Bebas Neue', sans-serif;
+  transition: all 0.3s ease-in-out;
+}
+
+.logo {
+  font-size: 1.5rem;
+  color: #fff;
+  font-weight: 200;
+}
+
+.links {
+  font-size: 1.5rem;
+  display: flex;
+  gap: 1.8rem;
+}
+
+.links a {
+  position: relative;
+  color: #fff;
+  font-weight: 400;
+  text-decoration: none;
+  padding: 0.05px 0.05px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.links a:hover {
+  color: #00ffe0;
+  background: rgba(0, 255, 255, 0.1);
+
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  gap: 4px;
+  padding: 8px;
+  transition: transform 0.3s;
+}
+
+.hamburger:hover {
+  transform: scale(1.1);
+}
+
+.hamburger span {
+  width: 30px;
+  height: 5px;
+  background: #fff;
+  border-radius: 3px;
+}
+
+.navHidden {
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: all 0.4s ease-out;
+}
+
+.navVisible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.4s ease-out;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* space between image and text */
+}
+
+.logoImage {
+  height: 45px; /* or whatever fits your design */
+  width: auto;
+}
+
+
+/* Responsive for mobile */
+@media (max-width: 768px) {
+  .links {
+    position: absolute;
+    top: 58px;
+    right: 0;
+    width: 100%;
+    flex-direction: column;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(6px);
+    padding: 1rem 2rem;
+    display: none;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .showMenu {
+    display: flex;
+  }
+
+  .hamburger {
+    display: flex;
+    /* iOS-specific hamburger optimizations */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    min-height: 44px;
+    min-width: 44px;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .links a {
+    /* iOS-specific link optimizations */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 426px) {
+  .logoImage {
+  height: 30px; /* or whatever fits your design */
+  width: auto;
+ }
+
+  .logo span {
+    display: none;
+  }
+
+  .hamburger span {
+    width: 25px;
+    height: 2px;
+  }
+
+  .navbar {
+    padding: 0.40rem 1rem; /* Reduce navbar height */
+  }
+  
+  .hamburger {
+    min-height: 40px;
+    min-width: 40px;
+  }
+}
+
+/* iOS-specific optimizations for very small screens */
+@media (max-width: 375px) {
+  .navbar {
+    padding: 0.3rem 0.8rem;
+  }
+  
+  .hamburger {
+    min-height: 36px;
+    min-width: 36px;
+  }
+  
+  .hamburger span {
+    width: 22px;
+    height: 2px;
+  }
+}
+

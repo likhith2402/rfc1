@@ -1,0 +1,229 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+model User {
+  id                      Int                @id @default(autoincrement())
+  email                   String             @unique
+  name                    String?
+  createdAt               DateTime           @default(now())
+  updatedAt               DateTime           @updatedAt
+  password                String
+  role                    Role               @default(USER)
+  isEmailVerified         Boolean            @default(false)
+  otp                     String?
+  otpExpiresAt            DateTime?
+  otpType                 OTPType?
+  metadata                Json?              // Store additional user data like child information
+  createdAnnouncements    Announcement[]     @relation("UserCreatedAnnouncements")
+  createdGames            Game[]             @relation("UserCreatedGames")
+  gameRegistrations       GameRegistration[] @relation("UserGameRegistrations")
+  notifications           Notification[]     @relation("UserNotifications")
+  recordedPayments        Payment[]          @relation("UserRecordedPayments")
+  createdPaymentRequests  PaymentRequest[]   @relation("UserCreatedPaymentRequests")
+  targetedPaymentRequests PaymentRequest[]   @relation("UserTargetedPaymentRequests")
+  createdPolls            Poll[]             @relation("UserPolls")
+  votes                   Vote[]             @relation("UserVotes")
+  status                  UserStatus         @default(ACTIVE)
+  createdTeams            Team[]             @relation("UserCreatedTeams")
+  teamMemberships         TeamMember[]       @relation("UserTeamMemberships")
+}
+
+model Poll {
+  id          Int          @id @default(autoincrement())
+  title       String
+  description String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  createdById Int
+  createdBy   User         @relation("UserPolls", fields: [createdById], references: [id])
+  options     PollOption[]
+  votes       Vote[]
+}
+
+model PollOption {
+  id     Int    @id @default(autoincrement())
+  text   String
+  pollId Int
+  poll   Poll   @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  votes  Vote[]
+}
+
+model Vote {
+  id           Int        @id @default(autoincrement())
+  userId       Int
+  pollId       Int
+  pollOptionId Int
+  createdAt    DateTime   @default(now())
+  poll         Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  pollOption   PollOption @relation(fields: [pollOptionId], references: [id], onDelete: Cascade)
+  user         User       @relation("UserVotes", fields: [userId], references: [id])
+
+  @@unique([userId, pollId])
+}
+
+model PaymentRequest {
+  id           Int                  @id @default(autoincrement())
+  description  String
+  amount       Float
+  dueDate      DateTime?
+  status       PaymentRequestStatus @default(PENDING)
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  createdById  Int
+  targetUserId Int
+  payments     Payment[]
+  createdBy    User                 @relation("UserCreatedPaymentRequests", fields: [createdById], references: [id])
+  targetUser   User                 @relation("UserTargetedPaymentRequests", fields: [targetUserId], references: [id])
+}
+
+model Payment {
+  id               Int            @id @default(autoincrement())
+  amountPaid       Float
+  paymentDate      DateTime       @default(now())
+  paymentMethod    String?
+  transactionId    String?        @unique
+  notes            String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  paymentRequestId Int
+  recordedById     Int?
+  paymentRequest   PaymentRequest @relation(fields: [paymentRequestId], references: [id])
+  recordedBy       User?          @relation("UserRecordedPayments", fields: [recordedById], references: [id])
+}
+
+model Notification {
+  id                Int               @id @default(autoincrement())
+  userId            Int
+  message           String
+  isRead            Boolean           @default(false)
+  type              NotificationType? @default(GENERAL)
+  relatedEntityType String?
+  relatedEntityId   Int?
+  createdAt         DateTime          @default(now())
+  user              User              @relation("UserNotifications", fields: [userId], references: [id])
+
+  @@index([userId, isRead])
+}
+
+model Game {
+  id              Int                @id @default(autoincrement())
+  title           String
+  description     String
+  maxParticipants Int
+  startDate       DateTime
+  endDate         DateTime
+  location        String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  createdById     Int
+  status          GameStatus         @default(UPCOMING)
+  createdBy       User               @relation("UserCreatedGames", fields: [createdById], references: [id])
+  registrations   GameRegistration[]
+
+  @@index([status, startDate])
+}
+
+model GameRegistration {
+  id        Int                @id @default(autoincrement())
+  gameId    Int
+  userId    Int
+  status    RegistrationStatus @default(REGISTERED)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  game      Game               @relation(fields: [gameId], references: [id])
+  user      User               @relation("UserGameRegistrations", fields: [userId], references: [id])
+
+  @@unique([gameId, userId])
+}
+
+model Announcement {
+  id          Int      @id @default(autoincrement())
+  title       String
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdById Int
+  isActive    Boolean  @default(true)
+  createdBy   User     @relation("UserCreatedAnnouncements", fields: [createdById], references: [id])
+}
+
+model Team {
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  createdById Int
+  createdBy   User         @relation("UserCreatedTeams", fields: [createdById], references: [id])
+  members     TeamMember[]
+  maxMembers  Int          @default(12)
+}
+
+model TeamMember {
+  id        Int      @id @default(autoincrement())
+  teamId    Int
+  userId    Int
+  role      String   @default("MEMBER") // Can be "CAPTAIN", "MEMBER", etc.
+  joinedAt  DateTime @default(now())
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user      User     @relation("UserTeamMemberships", fields: [userId], references: [id])
+
+  @@unique([teamId, userId])
+}
+
+enum Role {
+  USER
+  ADMIN
+  PARENT
+}
+
+enum OTPType {
+  REGISTRATION
+  PASSWORD_RESET
+}
+
+enum PaymentRequestStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum NotificationType {
+  GENERAL
+  POLL_NEW
+  POLL_VOTE_RECEIVED
+  PAYMENT_REQUEST_NEW
+  PAYMENT_REQUEST_DUE
+  PAYMENT_RECEIVED
+  PAYMENT_CONFIRMED
+  GAME_REGISTRATION
+  GAME_STATUS_CHANGE
+  STATUS_CHANGE
+}
+
+enum GameStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum RegistrationStatus {
+  REGISTERED
+  CANCELLED
+  ATTENDED
+  NO_SHOW
+}
