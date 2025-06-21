@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "nx build user-web",
-    "start": "npx next start dist/apps/user-web",
+    "build": "cd apps/user-web && npx next build",
+    "start": "cd apps/user-web && npx next start",
     "dev": "nx serve user-web"
   },
   "keywords": [],
